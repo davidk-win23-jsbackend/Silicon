@@ -1,0 +1,164 @@
+.account-security {
+    .container {
+        margin-top: 2rem;
+        margin-bottom: 10rem;
+        display: flex;
+        gap: 9rem;
+        
+
+        aside {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            width: 500px;
+            border-right: 1px solid var(--color-gray-300);
+        }
+
+        .content { 
+            margin-top: 3rem;
+            flex: 3;
+            align-items: start;
+
+            .title-and-status {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 2rem;
+
+                .alert {
+                    color: forestgreen;
+                }
+            }
+            h5 {
+                color: var(--color-theme);
+            }
+
+            form {
+
+                .form-content {
+                    padding-bottom: 3rem;
+                    border-bottom: 1px solid var(--color-gray-400);
+                    margin-top: 30px;
+                    display: grid;
+                    gap: 20px;
+                    grid-template-columns: 1fr 1fr;
+                    grid-template-areas: "pass pass" "newpass confirmpass" "buttons buttons";
+                }
+
+                .input-group {
+                    label {
+                        padding: 3px;
+                    }
+                }
+
+                span {
+                    position: relative;
+
+                    &.field-validation-error {
+                        @include text-s;
+                        color: var(--color-danger-dark);
+
+                        &::after {
+                            position: absolute;
+                            right: 10px;
+                            bottom: 34px;
+                            z-index: 10;
+                            font-size: 1.7em;
+                            display: block;
+                            content: '\2BBF';
+                        }
+                    }
+                }
+
+                #form-password {
+                    grid-area: pass;
+                    width: 48.5%;
+                }
+
+                #form-confirmpassword {
+                    grid-area: newpass;
+                }
+
+                #form-confirmpassword {
+                    grid-area: confirmpass;
+                }
+
+                #form-checkbox {
+                    grid-area: terms;
+                }
+
+                #form-buttons {
+                    display: flex;
+                    grid-area: buttons;
+                    width: auto;
+
+                    .btn-gray {
+                        width: 8rem;
+                        margin-right: 1.5rem;
+                    }
+
+                    .btn-theme {
+                        width: 12rem;
+                    }
+                }
+
+                .checkbox-group {
+                    position: relative;
+                    height: 50px;
+                    margin-top: 10px;
+
+                    span {
+                        position: absolute;
+                        top: 3.5px;
+                        right: 41px;
+
+                        &.field-validation-error {
+                            @include text-s;
+                            color: var(--color-danger-dark);
+
+                            &::after {
+                                position: absolute;
+                                right: -32px;
+                                top: 0px;
+                                z-index: 10;
+                                font-size: 1.7em;
+                                display: block;
+                                content: '\2BBF';
+                            }
+                        }
+                    }
+                }
+            }
+            .delete-acc {
+                margin-top: 2rem;
+                h5 {
+                    margin-bottom: 1rem;
+                }
+                form {
+                    display:flex;
+                    align-items: start;
+                    margin-top: 1.5rem;
+                    flex-direction: column;
+                    .form-check {
+                        display:flex;
+                        justify-content:center;
+                        gap: 1rem;
+                    }
+
+
+                    button {
+                        border: none;
+                        margin-top: 1rem;
+                        background-color: #bd0000;
+                        color: white;
+                        width: 10rem;
+
+                        &:hover {
+                            background-color: red;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

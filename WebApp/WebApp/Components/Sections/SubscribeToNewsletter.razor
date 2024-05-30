@@ -1,0 +1,101 @@
+﻿@rendermode InteractiveServer
+
+
+@using System.Net.Http
+@using Newtonsoft.Json
+@using System.Text
+@using System.ComponentModel.DataAnnotations
+@using static System.Net.WebRequestMethods
+
+<section id="subscribe" class="subscribe">
+    <div class="container">
+        <div class="title">
+            <h2>Don't Want to Miss Anything</h2>
+            <img src="/images/icons/swirl-arrow-icon.svg" alt="swirl arrow" />
+        </div>
+        <EditForm Model="SubscribeForm" OnValidSubmit="OnValidSubmit" FormName="subscribeform" method="post" novalidate>
+            <div class="alternative">
+                <h4>Sign up for Newsletters</h4>
+                <div class="options">
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="SubscribeForm.DailyNewsletter" />
+                            <label>Daily Newsletter</label>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="SubscribeForm.AdvertisingUpdates" />
+                            <label>Advertising Updates</label>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="SubscribeForm.WeekinReview" />
+                            <label>Week in Review</label>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="SubscribeForm.EventUpdates" />
+                            <label>Event Updates</label>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="SubscribeForm.StartupsWeekly" />
+                            <label>Startups Weekly</label>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="SubscribeForm.Podcasts" />
+                            <label>Podcasts</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-email">
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <InputText @bind-Value="SubscribeForm.Email" />
+                    <ValidationMessage For="@(() => SubscribeForm.Email)" />
+                </div>
+                <button type="submit" class="btn btn-theme">Subscribe</button>
+            </div>
+            <span class="status-message">@StatusMessage</span>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string StatusMessage { get; set; } = null!;
+
+    [SupplyParameterFromForm]
+    public SubscribeFormModel SubscribeForm { get; set; } = new SubscribeFormModel();
+
+    private async Task OnValidSubmit()
+    {
+        var result = await httpClient.PostAsJsonAsync("http://localhost:7082/api/Subscribe", SubscribeForm);
+        if (result.IsSuccessStatusCode)
+        {
+            StatusMessage = "Thank you for subscribing!";
+        }
+
+    }
+    public class SubscribeFormModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email Address", Prompt = "Your Email")]
+        public string Email { get; set; } = null!;
+        public bool DailyNewsletter { get; set; }
+        public bool AdvertisingUpdates { get; set; }
+        public bool WeekinReview { get; set; }
+        public bool EventUpdates { get; set; }
+        public bool StartupsWeekly { get; set; }
+        public bool Podcasts { get; set; }
+    }
+
+}

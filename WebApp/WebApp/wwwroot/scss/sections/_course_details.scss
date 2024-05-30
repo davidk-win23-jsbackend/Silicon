@@ -1,0 +1,204 @@
+
+.course-details {
+    .course-showcase {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        height: 677px;
+        overflow: hidden;
+
+        .container {
+            position: absolute;
+            z-index: 2;
+            top: 2rem;
+
+            .bestseller {
+                display: inline-block;
+                top: 1rem;
+                left: 1rem;
+                background-color: var(--color-success-dark);
+                color: var(--color-white);
+                padding: 4px 12px;
+                border-radius: 4px;
+                margin-right: 1rem;
+            }
+
+            .tag-digital {
+                display: inline-block;
+                padding: 0.28rem 1rem 0.28rem 1rem;
+                border-radius: 5px;
+                background-color: var(--color-gray-500);
+            }
+
+            h1 {
+                margin-top: 0.5rem;
+                color: var(--color-white);
+            }
+
+            p {
+                color: var(--color-gray-600);
+            }
+
+            .popularity {
+                display: flex;
+                align-items: center;
+                margin-top: 5rem;
+                gap: 1.3rem;
+
+                .fa-star {
+                    color: #be8700;
+                }
+            }
+
+            .author-short {
+                margin-top: 12rem;
+                display: flex;
+                align-items: center;
+                gap: 2rem;
+
+                .image-frame {
+                    display: inline-block;
+                    width: 4rem;
+                    height: 4rem;
+                    border-radius: 50px;
+                    overflow: hidden;
+
+                    img {
+                        position: static;
+                        height: 4rem;
+                        width: auto;
+                    }
+                }
+
+                .created-by {
+                    display: inline-block;
+
+                    h6 {
+                        font-size: 18px;
+                        color: var(--color-gray-600);
+                    }
+
+                    h7 {
+                        color: var(--color-gray-400);
+                    }
+                }
+            }
+
+            .course-path {
+                margin-bottom: 4rem;
+                color: var(--color-gray-500);
+
+                a {
+                    color: var(--color-gray-500);
+                }
+            }
+        }
+
+        .over-showcase {
+            background-color: rgb(20, 19, 28, 0.70);
+            width: 100%;
+            z-index: 1;
+        }
+
+        img {
+            position: absolute;
+            width: 150%;
+            height: auto;
+            z-index: 0;
+            top: -20rem;
+            left: -5rem;
+        }
+    }
+
+    .container {
+        .content {
+            position: relative;
+            margin-top: 5rem;
+
+            .description {
+                margin-bottom: 4rem;
+                display: inline-block;
+                width: 60%;
+            }
+
+            .course-includes {
+                gap: 20px;
+                padding: 3rem 5rem 3rem 5rem;
+                position: absolute;
+                right: 0;
+                top: 0;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+
+                h3 {
+                    margin-bottom: 2rem;
+                }
+
+                p {
+                    margin-bottom: 1rem;
+                }
+
+                i {
+                    margin-right: 1rem;
+                }
+            }
+
+            .course-overview {
+                h4 {
+                    margin-bottom: 1rem;
+                }
+
+                p {
+                    margin-bottom: 0.8rem;
+                }
+
+                i {
+                    color: var(--color-theme);
+                }
+            }
+
+            .about-author {
+                display: grid;
+                grid-template-columns: auto auto;
+                margin-top: 12rem;
+
+                .author-image {
+                    height: auto;
+                    overflow: hidden;
+
+                    img {
+                        height: 35rem;
+                        width: auto;
+                    }
+                }
+
+                .text-about {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    overflow: hidden;
+                    background-color: rgb(12, 15, 25);
+                    height: 35rem;
+                    padding: 4rem;
+
+
+                    .yt-btn {
+                        display: inline-block;
+                    }
+
+                    .fb-btn {
+                        display: inline-block;
+                    }
+
+                    h2 {
+                        color: var(--color-white);
+                    }
+
+                    p {
+                        color: var(--color-gray-600);
+                    }
+                }
+            }
+        }
+    }
+}

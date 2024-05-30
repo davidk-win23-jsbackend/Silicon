@@ -1,0 +1,124 @@
+.account-details {
+    .container {
+        margin-top: 2rem;
+        margin-bottom: 10rem;
+        display: flex;
+        gap: 9rem;
+
+        aside {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            width: 500px;
+            border-right: 1px solid var(--color-gray-300);
+        }
+
+        .content {
+            margin-top: 3rem;
+            flex: 3;
+            align-items: start;
+
+            .title-and-status {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 2rem;
+                .alert {
+                    color: forestgreen;
+                }
+            }
+
+            .form-basic {
+                margin-bottom: 2rem;
+                padding-bottom: 2rem;
+                border-bottom: 1px solid var(--color-gray-300);
+
+                .form-content {
+                    display: grid;
+                    grid-template-areas: "firstname lastname" "email phone" "bio bio";
+                    gap: 15px;
+
+                    #form-firstname {
+                        grid-area: firstname;
+                    }
+
+                    #form-lastname {
+                        grid-area: lastname;
+                    }
+
+                    #form-email {
+                        grid-area: email;
+                    }
+
+                    #form-phone {
+                        grid-area: phone;
+                    }
+
+                    #form-bio {
+                        grid-area: bio;
+
+                        textarea {
+                            width: 100%;
+                            height: 8rem;
+                            resize: none;
+                        }
+                    }
+                }
+            }
+
+            h5 {
+                color: var(--color-theme)
+            }
+
+            .form-buttons {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 15px;
+                width: 70%;
+            }
+        }
+
+        .form-address {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+
+            .form-content {
+                display: grid;
+                grid-template-areas: "address1 address1" "address2 address2" "postalcode city";
+                gap: 15px;
+                margin-bottom: 2rem;
+
+                #form-addressline-1 {
+                    grid-area: address1;
+                }
+
+                #form-addressline-2 {
+                    grid-area: address2;
+                }
+
+                #form-postalcode {
+                    grid-area: postalcode;
+                }
+
+                #form-phone {
+                    grid-area: phone;
+                }
+
+                #form-city {
+                    grid-area: city;
+                }
+            }
+
+            h5 {
+                color: var(--color-theme)
+            }
+
+            .form-buttons {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 15px;
+                width: 35%;
+            }
+        }
+    }
+}

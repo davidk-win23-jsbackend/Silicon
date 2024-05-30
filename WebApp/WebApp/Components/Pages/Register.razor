@@ -1,0 +1,139 @@
+﻿@page "/signup"
+@rendermode InteractiveServer
+
+@using System.Text
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.EntityFrameworkCore
+@using WebApp.Data
+@using WebApp.Filters
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Register> Logger
+@inject NavigationManager NavigationManager
+
+<PageTitle>Sign up</PageTitle>
+
+<section class="signup">
+    <div class="container">
+
+        @if (!string.IsNullOrEmpty(@StatusMessage))
+        {
+            <div class="alert alert-danger">
+                @StatusMessage
+            </div>
+        }
+        <EditForm Model="SignUpForm" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="OnValidSubmit" FormName="signupform" novalidate>
+            <DataAnnotationsValidator />
+            <h1>Create Account</h1>
+            <p>Already have an account? <a href="/signin">Sign in here</a></p>
+
+            <div class="form-content">
+                <div id="form-firstname" class="input-group">
+                    <label for="firstName">First name</label>
+                    <InputText id="firstName" @bind-Value="SignUpForm.FirstName" class="form-control" autocomplete="given-name" aria-required="true" placeholder="Enter your first name" />
+                    <ValidationMessage For="() => SignUpForm.FirstName" />
+                </div>
+                <div id="form-lastname" class="input-group">
+                    <label for="lastName">Last name</label>
+                    <InputText id="lastName" @bind-Value="SignUpForm.LastName" class="form-control" autocomplete="family-name" aria-required="true" placeholder="Enter your last name" />
+                    <ValidationMessage For="() => SignUpForm.LastName" />
+                </div>
+                <div id="form-email" class="input-group">
+                    <label for="email">Email</label>
+                    <InputText id="email" type="email" @bind-Value="SignUpForm.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="Enter your email" />
+                    <ValidationMessage For="() => SignUpForm.Email" />
+                </div>
+                <div id="form-password" class="input-group">
+                    <label for="password">Password</label>
+                    <InputText id="password" type="password" @bind-Value="SignUpForm.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Enter your password" />
+                    <ValidationMessage For="() => SignUpForm.Password" />
+                </div>
+                <div id="form-confirmpassword" class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <InputText id="confirmPassword" type="password" @bind-Value="SignUpForm.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm your password" />
+                    <ValidationMessage For="() => SignUpForm.ConfirmPassword" />
+                </div>
+            </div>
+            <div id="form-checkbox" class="checkbox-group">
+                <div class="input-group">
+                    <InputCheckbox type="checkbox" id="termsAndConditions" @bind-Value="SignUpForm.TermsAndConditions" class="form-control" aria-required="true" />
+                    <label for="termsAndConditions">I accept the terms and conditions.</label>
+                </div>
+                <ValidationMessage For="() => SignUpForm.TermsAndConditions" />
+            </div>
+            <div id="form-button">
+                <button type="submit" class="btn btn-theme"><i class="fa-regular fa-arrow-left-to-bracket"></i>Sign up</button>
+            </div>
+        </EditForm>
+
+    </div>
+</section>
+
+@code {
+
+    [SupplyParameterFromQuery]
+    private string? StatusMessage { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+    private SignUpFormModel SignUpForm { get; set; } = new();
+
+    public async Task OnValidSubmit(EditContext editContext)
+    {
+        var user = new ApplicationUser
+            {
+                FirstName = SignUpForm.FirstName,
+                LastName = SignUpForm.LastName,
+                UserName = SignUpForm.Email,
+                Email = SignUpForm.Email
+            };
+
+
+        var result = await httpClient.PostAsJsonAsync("CONNECTIONSTRING", SignUpForm.Password);
+        if (!result.IsSuccessStatusCode)
+        {
+            StatusMessage = "Unable to register Account. Please try again.";
+            return;
+        }
+        StatusMessage = "Registration successful!";
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        NavigationManager.NavigateTo(ReturnUrl ?? "/");
+    }
+
+    public class SignUpFormModel
+    {
+        [Required]
+        [Display(Name = "First name")]
+        public string FirstName { get; set; } = null!;
+
+        [Required]
+        [Display(Name = "Last name")]
+        public string LastName { get; set; } = null!;
+
+        [Required]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$", ErrorMessage = "Password must contain at least one letter and one digit.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+
+        [CheckboxRequired]
+        [Display(Name = "Terms & Conditions")]
+        public bool TermsAndConditions { get; set; }
+    }
+}

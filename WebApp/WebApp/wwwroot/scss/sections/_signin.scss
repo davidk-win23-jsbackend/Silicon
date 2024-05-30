@@ -1,0 +1,85 @@
+.signin {
+    margin-top: 30px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .container {
+        width: 35%;
+
+        form {
+            input {
+                padding-top: 15px;
+                padding-bottom: 15px
+            }
+
+            .form-content {
+                margin-top: 30px;
+                display: grid;
+                gap: 20px;
+                grid-template-columns: 1fr;
+                grid-template-areas: "email" "password" "remember"
+            }
+
+            .input-group {
+                label {
+                    padding: 3px;
+                }
+            }
+
+            .checkbox-group {
+                margin-top: 10px;
+                margin-bottom: 30px;
+            }
+
+            #form-email {
+                grid-area: email;
+            }
+
+            #form-password {
+                grid-area: password;
+            }
+
+            #form-rememberMe {
+                grid-area: remember;
+            }
+
+            #btn-submit {
+                grid-area: submit;
+            }
+
+            .external-providers {
+                grid-area: external;
+                border-top: 1px solid var(--color-gray-400);
+                text-align: center;
+                margin-top: 20px;
+                margin-bottom: 2rem;
+
+                h6 {
+                    padding: 30px 0 0;
+                }
+            }
+
+            .providers {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+
+                .btn-s {
+                    margin-top: 1rem;
+                    padding: 1rem 5rem 1rem 5rem;
+                    background-color: #d1d6e7;
+                    border-radius: 0.7rem;
+                    color: var(--color-gray-700);
+                    
+                    &:hover {
+                        background-color: var(--color-theme);
+                        color: white; 
+                    }
+                }
+            }
+        }
+    }
+}

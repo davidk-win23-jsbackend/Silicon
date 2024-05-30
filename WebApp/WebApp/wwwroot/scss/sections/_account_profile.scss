@@ -1,0 +1,62 @@
+.account-profile {
+    display: flex;
+    margin-top: 2rem;
+
+    .profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+
+        .profile-image {
+            width: 8rem;
+            position: relative;
+
+            img {
+                border-radius: 50%;
+                height: 100px;
+                width: 100px;
+                object-fit: cover;
+                border: 1px solid var(--color-gray-400);
+            }
+
+            form {
+                label {
+                    display: flex;
+                    position: absolute;
+                    right: 1rem;
+                    bottom: 0.5rem;
+                }
+            }
+
+            .profile-info {
+                h3 {
+                }
+
+                p {
+                }
+            }
+        }
+
+        .user-menu {
+            padding-top: 2rem;
+        }
+
+        .btn-white {
+            display: flex;
+            justify-content: start;
+            width: 100%;
+            color: var(--color-gray-900);
+            border: none;
+
+            &.active {
+                background-color: var(--color-theme);
+                color: white;
+            }
+
+            &:hover {
+                color: var(--color-white);
+            }
+        }
+    }
+}
