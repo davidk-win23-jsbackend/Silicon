@@ -1,6 +1,7 @@
 ﻿@page "/signup"
 @rendermode InteractiveServer
-
+@attribute [StreamRendering]
+@inject HttpClient httpClient
 @using System.Text
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Encodings.Web
@@ -86,22 +87,30 @@
 
     public async Task OnValidSubmit(EditContext editContext)
     {
-        var user = new ApplicationUser
+        var registrationRequest = new UserRegistrationRequest
             {
                 FirstName = SignUpForm.FirstName,
                 LastName = SignUpForm.LastName,
-                UserName = SignUpForm.Email,
-                Email = SignUpForm.Email
+                Email = SignUpForm.Email,
+                Password = SignUpForm.Password
             };
 
 
-        var result = await httpClient.PostAsJsonAsync("CONNECTIONSTRING", SignUpForm.Password);
+        var result = await httpClient.PostAsJsonAsync("http://localhost:7110/api/SignUp", registrationRequest);
+
         if (!result.IsSuccessStatusCode)
         {
             StatusMessage = "Unable to register Account. Please try again.";
             return;
         }
         StatusMessage = "Registration successful!";
+        var user = new ApplicationUser
+            {
+                UserName = SignUpForm.Email,
+                Email = SignUpForm.Email,
+                FirstName = SignUpForm.FirstName,
+                LastName = SignUpForm.LastName
+            };
         await SignInManager.SignInAsync(user, isPersistent: false);
         NavigationManager.NavigateTo(ReturnUrl ?? "/");
     }
@@ -122,7 +131,6 @@
         public string Email { get; set; } = "";
 
         [Required]
-        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$", ErrorMessage = "Password must contain at least one letter and one digit.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; } = "";
@@ -135,5 +143,13 @@
         [CheckboxRequired]
         [Display(Name = "Terms & Conditions")]
         public bool TermsAndConditions { get; set; }
+    }
+
+    public class UserRegistrationRequest
+    {
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }

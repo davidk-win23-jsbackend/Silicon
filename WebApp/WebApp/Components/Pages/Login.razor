@@ -1,43 +1,47 @@
 ﻿@page "/signin"
 
 @using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Identity
-@using WebApp.Data
-
-@inject SignInManager<ApplicationUser> SignInManager
-@inject ILogger<Login> Logger
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Newtonsoft.Json
+@using System.Text.Json
+@inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Sign in</PageTitle>
 
 <section class="signin">
     <div class="container">
 
-        @if (!string.IsNullOrEmpty(ErrorMessage))
+        @if (!string.IsNullOrEmpty(StatusMessage))
         {
             <div class="alert alert-danger">
-                @ErrorMessage
+                @StatusMessage
             </div>
         }
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="LoginUser" FormName="signup" novalidate>
+        <EditForm Model="SignInForm" OnValidSubmit="OnValidSubmit" FormName="signin" novalidate>
             <DataAnnotationsValidator />
             <h1>Welcome back</h1>
-            <p>Don't have an account yet? <a href="/signin">Sign up here</a></p>
+            <p>Don't have an account yet? <a href="/signup">Sign up here</a></p>
 
             <div class="form-content">
                 <div id="form-email" class="input-group">
                     <label>Email</label>
-                    <InputText type="email" @bind-Value="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="Enter your email" />
+                    <InputText type="email" @bind-Value="SignInForm.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="Enter your email" />
+                    <ValidationMessage For="() => SignInForm.Email" />
                 </div>
                 <div id="form-password" class="input-group">
                     <label>Password</label>
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Enter your password" />
+                    <InputText type="password" @bind-Value="SignInForm.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Enter your password" />
+                    <ValidationMessage For="() => SignInForm.Password" />
                 </div>
             </div>
             <div id="form-checkbox" class="checkbox-group">
                 <div class="input-group">
-                    <InputCheckbox @bind-Value="Input.RememberMe" class="form-control" autocomplete="rememberme"/>
+                    <InputCheckbox @bind-Value="SignInForm.RememberMe" class="form-control" />
                     <label>Remember me</label>
                 </div>
             </div>
@@ -50,40 +54,55 @@
 </section>
 
 @code {
-
-    private string? ErrorMessage { get; set; }
-
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
+    [SupplyParameterFromQuery]
+    private string? StatusMessage { get; set; }
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    [SupplyParameterFromForm]
+    private SignInFormModel SignInForm { get; set; } = new();
+
+    private bool isRendered;
+    private string? authToken;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        if (!string.IsNullOrEmpty(authToken))
         {
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", authToken);
+            authToken = null; // Clear the token after it's been stored
         }
     }
 
-    public async Task LoginUser()
+    public async Task OnValidSubmit(EditContext editContext)
     {
-        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        if (result.Succeeded)
+        var loginRequest = new UserLoginRequest
+            {
+                Email = SignInForm.Email,
+                Password = SignInForm.Password,
+                IsPersistent = SignInForm.RememberMe
+            };
+
+        var result = await HttpClient.PostAsJsonAsync("http://localhost:7110/api/SignIn", loginRequest);
+
+        if (!result.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo(ReturnUrl ?? "/");
+            StatusMessage = "Unable to sign in. Please try again.";
+            return;
         }
-        else
-        {
-            ErrorMessage = "Incorrect email or password.";
-        }
+
+        var responseContent = await result.Content.ReadAsStringAsync();
+        authToken = JsonDocument.Parse(responseContent).RootElement.GetProperty("token").GetString();
+
+        StatusMessage = "Sign in successful!";
+        NavigationManager.NavigateTo(ReturnUrl ?? "/");
+
+        // Trigger a re-render to call OnAfterRenderAsync
+        StateHasChanged();
     }
 
-    private sealed class InputModel
+    private class SignInFormModel
     {
         [Required]
         [EmailAddress]
@@ -95,5 +114,12 @@
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+    }
+
+    public class UserLoginRequest
+    {
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
+        public bool IsPersistent { get; set; }
     }
 }

@@ -1,72 +1,167 @@
 ﻿@page "/account/details"
-
 @using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Identity
-@using WebApp.Data
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
 
-@inject UserManager<ApplicationUser> UserManager
-@inject SignInManager<ApplicationUser> SignInManager
+<PageTitle>Account Details</PageTitle>
 
-<PageTitle>Profile</PageTitle>
+<section class="account-details">
+    <div class="container">
+        <aside>
+            <!-- You can include any sidebar content here -->
+        </aside>
 
-<h3>Profile</h3>
-
-<div class="row">
-    <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
+        <div class="content">
+            <div class="title-and-status">
+                <h2>Account Details</h2>
+                @if (!string.IsNullOrEmpty(StatusMessage))
+                {
+                    <div class="alert alert-danger">
+                        @StatusMessage
+                    </div>
+                }
             </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                <label for="phone-number" class="form-label">Phone number</label>
-                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </EditForm>
+            <EditForm Model="BasicInfo" OnValidSubmit="UpdateBasicInfoAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <h5>Basic Info</h5>
+                <div class="form-content">
+                    <div id="form-firstname" class="input-group">
+                        <label for="firstName">First name</label>
+                        <InputText id="firstName" @bind-Value="BasicInfo.FirstName" class="form-control" />
+                        <ValidationMessage For="@(() => BasicInfo.FirstName)" />
+                    </div>
+                    <div id="form-lastname" class="input-group">
+                        <label for="lastName">Last name</label>
+                        <InputText id="lastName" @bind-Value="BasicInfo.LastName" class="form-control" />
+                        <ValidationMessage For="@(() => BasicInfo.LastName)" />
+                    </div>
+                    <div id="form-email" class="input-group">
+                        <label for="email">E-mail address</label>
+                        <InputText id="email" @bind-Value="BasicInfo.Email" class="form-control" />
+                        <ValidationMessage For="@(() => BasicInfo.Email)" />
+                    </div>
+                    <div id="form-phone" class="input-group">
+                        <label for="phone">Phone (optional)</label>
+                        <InputText id="phone" @bind-Value="BasicInfo.PhoneNumber" class="form-control" />
+                        <ValidationMessage For="@(() => BasicInfo.PhoneNumber)" />
+                    </div>
+                    <div id="form-bio" class="input-group">
+                        <label for="bio">Bio (optional)</label>
+                        <InputTextArea id="bio" @bind-Value="BasicInfo.Bio" class="form-control" />
+                        <ValidationMessage For="@(() => BasicInfo.Bio)" />
+                    </div>
+                    <div class="form-buttons">
+                        <button type="reset" class="btn btn-gray">Cancel</button>
+                        <button type="submit" class="btn btn-theme">Save changes</button>
+                    </div>
+                </div>
+            </EditForm>
+
+            <EditForm Model="AddressInfo" OnValidSubmit="UpdateAddressInfoAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <h5>Address Info</h5>
+                <div class="form-content">
+                    <div id="form-addressline-1" class="input-group">
+                        <label for="addressLine1">Address line 1</label>
+                        <InputText id="addressLine1" @bind-Value="AddressInfo.AddressLine_1" class="form-control" />
+                        <ValidationMessage For="@(() => AddressInfo.AddressLine_1)" />
+                    </div>
+                    <div id="form-addressline-2" class="input-group">
+                        <label for="addressLine2">Address line 2 (optional)</label>
+                        <InputText id="addressLine2" @bind-Value="AddressInfo.AddressLine_2" class="form-control" />
+                        <ValidationMessage For="@(() => AddressInfo.AddressLine_2)" />
+                    </div>
+                    <div id="form-postalcode" class="input-group">
+                        <label for="postalCode">Postal code</label>
+                        <InputText id="postalCode" @bind-Value="AddressInfo.PostalCode" class="form-control" />
+                        <ValidationMessage For="@(() => AddressInfo.PostalCode)" />
+                    </div>
+                    <div id="form-city" class="input-group">
+                        <label for="city">City</label>
+                        <InputText id="city" @bind-Value="AddressInfo.City" class="form-control" />
+                        <ValidationMessage For="@(() => AddressInfo.City)" />
+                    </div>
+                </div>
+                <div class="form-buttons">
+                    <button type="reset" class="btn btn-gray">Cancel</button>
+                    <button type="submit" class="btn btn-theme">Save changes</button>
+                </div>
+            </EditForm>
+        </div>
     </div>
-</div>
+</section>
 
 @code {
-    private ApplicationUser user = default!;
-    private string? username;
-    private string? phoneNumber;
+    private string? StatusMessage { get; set; }
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private AccountBasicInfo BasicInfo { get; set; } = new();
+    private AccountAddressInfo AddressInfo { get; set; } = new();
 
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
-
-    protected override async Task OnInitializedAsync()
+    private async Task UpdateBasicInfoAsync()
     {
-        user = await UserManager.GetUserAsync(HttpContext.User) ?? null!;
-        username = await UserManager.GetUserNameAsync(user);
-        phoneNumber = await UserManager.GetPhoneNumberAsync(user);
-
-        Input.PhoneNumber ??= phoneNumber;
-    }
-
-    private async Task OnValidSubmitAsync()
-    {
-        if (Input.PhoneNumber != phoneNumber)
+        var response = await HttpClient.PostAsJsonAsync("/api/account/updatebasicinfo", BasicInfo);
+        if (response.IsSuccessStatusCode)
         {
-            var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-            if (!setPhoneResult.Succeeded)
-            {
-            }
+            StatusMessage = "Basic info updated successfully!";
         }
-
-        await SignInManager.RefreshSignInAsync(user);
+        else
+        {
+            StatusMessage = "Failed to update basic info.";
+        }
     }
 
-    private sealed class InputModel
+    private async Task UpdateAddressInfoAsync()
     {
-        [Phone]
-        [Display(Name = "Phone number")]
+        var response = await HttpClient.PostAsJsonAsync("/api/account/updateaddressinfo", AddressInfo);
+        if (response.IsSuccessStatusCode)
+        {
+            StatusMessage = "Address info updated successfully!";
+        }
+        else
+        {
+            StatusMessage = "Failed to update address info.";
+        }
+    }
+
+    public class AccountBasicInfo
+    {
+        [Required]
+        [Display(Name = "First name", Prompt = "Enter your first name")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Last name", Prompt = "Enter your last name")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "E-mail address", Prompt = "Enter your e-mail address")]
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; } = string.Empty;
+
+        [Display(Name = "Phone (optional)", Prompt = "Enter your phone")]
         public string? PhoneNumber { get; set; }
+
+        [Display(Name = "Bio (optional)", Prompt = "Add a short bio...")]
+        public string? Bio { get; set; }
+    }
+
+    public class AccountAddressInfo
+    {
+        [Required]
+        [Display(Name = "Address line 1", Prompt = "Enter first address line")]
+        public string AddressLine_1 { get; set; } = string.Empty;
+
+        [Display(Name = "Address line 2 (optional)", Prompt = "Enter second address line")]
+        public string? AddressLine_2 { get; set; }
+
+        [Required]
+        [Display(Name = "Postal code", Prompt = "Enter your postal code")]
+        public string PostalCode { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "City", Prompt = "Enter your city")]
+        public string City { get; set; } = string.Empty;
     }
 }

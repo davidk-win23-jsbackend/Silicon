@@ -1,11 +1,14 @@
-﻿<header>
+﻿@using Microsoft.AspNetCore.Authorization
+@inherits LayoutComponentBase
+@attribute [Authorize]
+<header>
     <div class="container">
         <a id="logo" href="">
             <img src="/images/logos/logo-light.svg" alt="Silicon" />
         </a>
         <nav>
             <NavLink href="" Match="NavLinkMatch.All">Overview</NavLink>
-            
+
             <AuthorizeView>
                 <Authorized>
                     <NavLink href="/courses">Courses</NavLink>
@@ -20,7 +23,7 @@
         <div id="theme-switch" class="btn-switch">
             <label>Light</label>
             <label class="switch" for="switch-mode">
-                <input type="checkbox" id="switch-mode" />
+                <input type="checkbox" id="switch-mode" @onclick="ToggleTheme" />
                 <span class="slider round"></span>
             </label>
             <label>Dark</label>
@@ -46,3 +49,33 @@
         </div>
     </div>
 </header>
+
+@code {
+    private bool IsDarkMode { get; set; } = false;
+
+    private void ToggleTheme()
+    {
+        IsDarkMode = !IsDarkMode;
+        // Implement logic to toggle between light and dark themes
+        // For example:
+        // if (IsDarkMode)
+        // {
+        //     // Apply dark theme styles
+        // }
+        // else
+        // {
+        //     // Apply light theme styles
+        // }
+    }
+
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity.IsAuthenticated;
+    }
+}
