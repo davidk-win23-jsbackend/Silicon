@@ -1,0 +1,107 @@
+﻿@page "/course-details"
+@inject HttpClient HttpClient
+@using System.Net.Http.Json
+
+if (Course != null)
+{
+<section class="course-details">
+    <div class="course-showcase">
+        <div class="container">
+            <div class="course-path">
+                <a href="/"> <i class="fa-regular fa-house"></i>Home</a> >>
+                <a href="/courses"> Courses</a> >>
+                <span> Course.Title</span>
+            </div>
+            if (Course.IsBestSeller)
+            {
+            <div class="bestseller">Best Seller</div>
+            }
+            <div class="tag-digital">Digital</div>
+            <h1>Course.Title</h1>
+            <p>Course.Description</p>
+
+            <div class="popularity">
+                <div class="reviews">
+                    <div class="rating">
+                        <p>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            (Course.ReviewsCount) reviews
+                        </p>
+                    </div>
+
+                </div>
+                <p> | </p>
+                <div class="likes"><p><i class="fa-regular fa-thumbs-up"></i> Course.LikesInNumbers likes</p></div>
+                <p> | </p>
+                <div class="hours"><p>Course.Hours hours</p></div>
+            </div>
+            <div class="author-short">
+                <div class="image-frame"><img src="Course.AuthorAvatar" /></div>
+                <div class="created-by">
+                    <h6>Created by</h6>
+                    <h7>Course.Author</h7>
+                </div>
+            </div>
+        </div>
+        <div class="over-showcase"></div>
+        <img src="Course.ImageUrl" alt="Course.Title" />
+    </div>
+    <div class="container">
+        <div class="content">
+            <div class="description">
+                <h1>Course Description</h1>
+                <p>Course.Description</p>
+            </div>
+            <div class="course-includes">
+                <h3>This course includes:</h3>
+                <ul>
+                    <li><i class="fa-regular fa-presentation-screen"></i> Course.Hours hours on-demand video</li>
+                    <li><i class="fa-regular fa-newspaper"></i> Course.ArticlesCount articles</li>
+                    <li><i class="fa-regular fa-arrow-down-to-bracket"></i> Course.ResourcesCount downloadable resources</li>
+                    <li><i class="fa-regular fa-infinity"></i> Full lifetime access</li>
+                    <li><i class="fa-light fa-trophy"></i> Certificate of completion</li>
+                </ul>
+                <div class="pricing">
+                    if (!string.IsNullOrEmpty(Course.DiscountPrice))
+                    {
+                    <div class="discount">Course.DiscountPrice</div>
+                    }
+                    <div class="price (string.IsNullOrEmpty(Course.DiscountPrice) ? " " : " discount-enabled")">Course.Price</div>
+                </div>
+                <button class="btn btn-theme">Join course</button>
+            </div>
+            <div class="course-overview">
+                <h4>What you'll learn</h4>
+                <ul>
+                    foreach (var item in Course.LearningPoints)
+                    {
+                    <li><i class="fa-regular fa-circle-check"></i> item</li>
+                    }
+                </ul>
+            </div>
+            <div class="about-author">
+                <div class="author-image">
+                    <img src="Course.AuthorAvatar" />
+                </div>
+                <div class="text-about">
+                    <h7>Learn from the best</h7>
+                    <h2>Course.Author</h2>
+                    <p>Course.AuthorDescription</p>
+                    <div class="social-buttons">
+                        <button class="yt-btn"><i class="fa-brands fa-youtube"></i> Course.YoutubeSubscribers subscribers</button>
+                        <button class="fb-btn"><i class="fa-brands fa-square-facebook"></i> Course.FacebookFollowers followers</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+}
+
+@code {
+
+}
